@@ -63,6 +63,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun observerViewModel() {
         vm.visitorData.observe(this, {
+            updateAverages()
+        })
+        vm.visitorDataAverages.observe(this, {
             updateChart()
         })
         vm.displayedWeekday.observe(this, {
@@ -71,6 +74,9 @@ class MainActivity : AppCompatActivity() {
         vm.gyms.observe(this, {
             updateGymsSpinner()
         })
+        vm.numberOfConsideredWeeks.observe(this, {
+            updateAverages()
+        })
     }
 
     fun onClickDownload(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -78,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch {
             val visitorData = visitorDataRepository.downloadData(gym)
             vm.visitorData.postValue(visitorData)
+            updateAverages()
         }
     }
 
@@ -99,10 +106,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAverages() {
+        val numberOfConsideredWeeks = vm.numberOfConsideredWeeks.value ?: return
+        val visitorData = vm.visitorData.value ?: return
+        val latestDate = visitorData.maxByOrNull { it.dateTime } ?: return
+        val oldestAllowedDate = latestDate.dateTime.minusWeeks(numberOfConsideredWeeks)
+        val visitorDataAverages = visitorDataRepository.createAverages(visitorData, oldestAllowedDate)
+        vm.visitorDataAverages.postValue(visitorDataAverages)
+    }
+
     private fun updateChart() {
         val displayedWeekday = vm.displayedWeekday.value ?: return
-        val visitorData = vm.visitorData.value ?: return
-        val entries = visitorData
+        val visitorDataAverages = vm.visitorDataAverages.value ?: return
+        val entries = visitorDataAverages
             .filter { it.dayOfWeek == displayedWeekday + 1 }
             .map {
                 Entry(

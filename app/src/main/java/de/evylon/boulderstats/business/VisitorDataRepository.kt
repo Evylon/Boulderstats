@@ -2,10 +2,7 @@ package de.evylon.boulderstats.business
 
 import android.annotation.SuppressLint
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
-import de.evylon.boulderstats.models.CSVFields
-import de.evylon.boulderstats.models.ClimbingGym
-import de.evylon.boulderstats.models.ParsedCSVData
-import de.evylon.boulderstats.models.VisitorData
+import de.evylon.boulderstats.models.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants
 import java.io.InputStream
@@ -34,8 +31,7 @@ class VisitorDataRepository {
 //                input.copyTo(output)
 //            }
 
-            val visitorData = createUniformData(parseCSV(input))
-            return createAverages(visitorData)
+            return createUniformData(parseCSV(input))
         }
     }
 
@@ -85,7 +81,8 @@ class VisitorDataRepository {
                             currentVisitorData.dateTime.dayOfWeek,
                             minuteOfDay / DateTimeConstants.MINUTES_PER_HOUR,
                             minuteOfDay % DateTimeConstants.MINUTES_PER_HOUR,
-                            defaultVisitorCountAtBeginningOfDay
+                            defaultVisitorCountAtBeginningOfDay,
+                            currentVisitorData.dateTime
                         )
                     )
                 } else {
@@ -94,7 +91,8 @@ class VisitorDataRepository {
                             previousVisitorData.dateTime.dayOfWeek,
                             minuteOfDay / DateTimeConstants.MINUTES_PER_HOUR,
                             minuteOfDay % DateTimeConstants.MINUTES_PER_HOUR,
-                            previousVisitorData.visitorCount
+                            previousVisitorData.visitorCount,
+                            previousVisitorData.dateTime
                         )
                     )
                 }
@@ -104,13 +102,16 @@ class VisitorDataRepository {
         return uniformVisitorData
     }
 
-    private fun createAverages(visitorData: List<VisitorData>): List<VisitorData> =
-        visitorData.groupBy { it.dayOfWeek }.flatMap { dataPerWeekday ->
+    fun createAverages(visitorData: List<VisitorData>,
+                       oldestAllowedDate: DateTime): List<VisitorDataAverage> =
+        visitorData
+            .filter { it.dateTime.isAfter(oldestAllowedDate) }
+            .groupBy { it.dayOfWeek }.flatMap { dataPerWeekday ->
             dataPerWeekday.value.groupBy { it.hour }.flatMap { dataPerHour ->
                 dataPerHour.value.groupBy { it.minutes }.map { dataPerMinute ->
                     val average =
                         dataPerMinute.value.sumOf { it.visitorCount } / dataPerMinute.value.size
-                    VisitorData(dataPerWeekday.key, dataPerHour.key, dataPerMinute.key, average)
+                    VisitorDataAverage(dataPerWeekday.key, dataPerHour.key, dataPerMinute.key, average)
                 }
             }
         }

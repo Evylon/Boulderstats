@@ -57,7 +57,7 @@ class VisitorDataRepository {
     private val defaultVisitorCountAtBeginningOfDay = 0
 
     private fun createUniformData(inputVisitorData: List<ParsedCSVData>): List<VisitorData> {
-        val sortedVisitorData = inputVisitorData.sortedBy { it.dateTime }
+        val sortedVisitorData = inputVisitorData.sortedBy { it.dateTime.dayOfYear }
         val uniformVisitorData = mutableListOf<VisitorData>()
         val visitorDataIterator = sortedVisitorData.iterator()
         var previousVisitorData: ParsedCSVData? = null

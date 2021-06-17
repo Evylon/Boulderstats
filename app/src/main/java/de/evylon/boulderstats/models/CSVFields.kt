@@ -1,4 +1,4 @@
-package de.evylon.boulderstats.ui
+package de.evylon.boulderstats.models
 
 enum class CSVFields(val colName: String) {
     TIME("time"),

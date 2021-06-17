@@ -16,6 +16,10 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import de.evylon.boulderstats.R
 import de.evylon.boulderstats.databinding.ActivityMainBinding
+import de.evylon.boulderstats.models.CSVFields
+import de.evylon.boulderstats.models.ClimbingGym
+import de.evylon.boulderstats.models.ParsedCSVData
+import de.evylon.boulderstats.models.VisitorData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime

@@ -1,4 +1,4 @@
-package de.evylon.boulderstats.ui
+package de.evylon.boulderstats.models
 
 data class ClimbingGym(
     val name: String,

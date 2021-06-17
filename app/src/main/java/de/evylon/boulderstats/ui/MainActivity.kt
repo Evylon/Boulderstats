@@ -7,8 +7,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -27,8 +25,8 @@ import java.lang.Exception
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
-
     private val vm: MainViewModel = MainViewModel()
+    private lateinit var binding: ActivityMainBinding
     private val baseURL = "https://evylon.de"
     private lateinit var lineChart: LineChart
 
@@ -61,25 +59,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initLayout() {
-        val binding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         binding.vm = vm
         binding.lifecycleOwner = this
+        setContentView(binding.root)
     }
 
     private fun observerViewModel() {
-        vm.visitorData.observe(this, Observer {
+        vm.visitorData.observe(this, {
             updateChart()
         })
-        vm.displayedWeekday.observe(this, Observer {
+        vm.displayedWeekday.observe(this, {
             updateChart()
         })
-        vm.gyms.observe(this, Observer {
+        vm.gyms.observe(this, {
             updateGymsSpinner()
         })
     }
 
-    fun onClickDownload(view: View) {
+    fun onClickDownload(@Suppress("UNUSED_PARAMETER") view: View) {
         GlobalScope.launch {
             download()
         }
@@ -224,7 +222,7 @@ class MainActivity : AppCompatActivity() {
             dataPerWeekday.value.groupBy { it.hour }.flatMap { dataPerHour ->
                 dataPerHour.value.groupBy { it.minutes }.map { dataPerMinute ->
                     val average =
-                        dataPerMinute.value.sumBy { it.visitorCount } / dataPerMinute.value.size
+                        dataPerMinute.value.sumOf { it.visitorCount } / dataPerMinute.value.size
                     VisitorData(dataPerWeekday.key, dataPerHour.key, dataPerMinute.key, average)
                 }
             }

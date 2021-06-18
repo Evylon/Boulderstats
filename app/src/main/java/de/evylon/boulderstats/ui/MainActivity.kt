@@ -82,9 +82,11 @@ class MainActivity : AppCompatActivity() {
     fun onClickDownload(@Suppress("UNUSED_PARAMETER") view: View) {
         val gym = vm.selectedGym.value ?: return // TODO show ui error
         GlobalScope.launch {
+            vm.isLoading.postValue(true)
             val visitorData = visitorDataRepository.downloadData(gym)
             vm.visitorData.postValue(visitorData)
             updateAverages()
+            vm.isLoading.postValue(false)
         }
     }
 

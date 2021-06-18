@@ -13,6 +13,7 @@ class MainViewModel : ViewModel() {
     var selectedGym = MutableLiveData<ClimbingGym>()
     var gyms = MutableLiveData(listOf<ClimbingGym>())
     var numberOfConsideredWeeks = MutableLiveData(DEFAULT_NUMBER_OF_WEEKS)
+    var isLoading = MutableLiveData(false)
 
     companion object {
         private const val DEFAULT_NUMBER_OF_WEEKS = 10

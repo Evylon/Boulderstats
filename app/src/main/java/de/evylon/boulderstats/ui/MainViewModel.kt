@@ -18,4 +18,3 @@ class MainViewModel : ViewModel() {
         private const val DEFAULT_NUMBER_OF_WEEKS = 10
     }
 }
-

@@ -29,6 +29,23 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:text="max Wochen:" />
+
+            <EditText
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:text="@={`` + vm.numberOfConsideredWeeks}"
+                android:textColor="@color/colorPrimaryDark"
+                android:inputType="number" />
+
         </LinearLayout>
 
         <com.github.mikephil.charting.charts.LineChart
